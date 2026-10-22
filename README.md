@@ -1,5 +1,16 @@
 # deep-robotics-mimic
 
+[![IsaacSim](https://img.shields.io/badge/IsaacSim-5.1.0-silver.svg)](https://docs.omniverse.nvidia.com/isaacsim/latest/overview.html)
+[![Isaac Lab](https://img.shields.io/badge/IsaacLab-2.3.2-silver)](https://isaac-sim.github.io/IsaacLab)
+[![RSL-RL](https://img.shields.io/badge/RSL--RL-5.0.1-silver)](https://github.com/leggedrobotics/rsl_rl)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.7.0-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Python](https://img.shields.io/badge/python-3.11-blue.svg)](https://docs.python.org/3/whatsnew/3.11.html)
+[![CUDA](https://img.shields.io/badge/CUDA-13.0-76B900?logo=nvidia&logoColor=white)](https://developer.nvidia.com/cuda-toolkit)
+[![Ubuntu](https://img.shields.io/badge/Ubuntu-22.04%20%2F%2024.04-orange?logo=ubuntu&logoColor=white)](https://ubuntu.com/)
+[![Discord](https://img.shields.io/badge/-Discord-5865F2?style=flat&logo=Discord&logoColor=white)](https://discord.gg/gdM9mQutC8)
+
+Watch the demo video on [YouTube](https://youtu.be/ohINsroS7Bc?si=E5e4rPv2-6JjQlRQ) or [Bilibili](https://b23.tv/aB0s4l1).
+
 Humanoid motion tracking training on Isaac Lab. Trains PPO policies that track reference motions (DeepMimic-style reward). Primary robot: **DR02_pro**.
 
 ## 1. Installation
