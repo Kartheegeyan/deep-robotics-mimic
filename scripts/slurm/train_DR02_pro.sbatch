@@ -99,9 +99,14 @@ nvidia-smi --query-gpu=index,name,memory.total,driver_version --format=csv,nohea
 # train.py writes logs/ relative to the cwd, so they land in $REPO/logs.
 # $HOME is mounted so Kit's shader/extension caches persist between jobs.
 # --container-writable: Kit writes caches and logs inside its package tree.
+# warmup_kit.py fills Kit's extension cache in ~/.local/share/ov from one process
+# first; the flock stops concurrent jobs from unpacking into it at the same time.
 srun --ntasks=1 --nodes=1 \
      --container-image="$IMAGE" \
      --container-mounts="/etc/slurm/task_prolog.sh:/etc/slurm/task_prolog.sh:ro,$REPO:/workspace,$HOME:$HOME" \
      --container-workdir=/workspace \
      --container-writable \
-     python scripts/rsl_rl/train_auto_restart.py --nproc_per_node "$GPUS" "${TRAIN_ARGS[@]}"
+     bash -c 'mkdir -p "$HOME/.local/share/ov" &&
+              flock "$HOME/.local/share/ov/warmup.lock" python scripts/rsl_rl/warmup_kit.py &&
+              exec python scripts/rsl_rl/train_auto_restart.py "$@"' \
+     _ --nproc_per_node "$GPUS" "${TRAIN_ARGS[@]}"
