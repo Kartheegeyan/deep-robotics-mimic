@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -26,10 +27,14 @@ def add_rsl_rl_args(parser: argparse.ArgumentParser):
     arg_group.add_argument("--checkpoint", type=str, default=None, help="Checkpoint file to resume from.")
     # -- logger arguments
     arg_group.add_argument(
-        "--logger", type=str, default=None, choices={"wandb", "tensorboard", "neptune"}, help="Logger module to use."
+        "--logger",
+        type=str,
+        default=None,
+        choices={"wandb", "tensorboard", "neptune", "mlflow"},
+        help="Logger module to use.",
     )
     arg_group.add_argument(
-        "--log_project_name", type=str, default=None, help="Name of the logging project when using wandb or neptune."
+        "--log_project_name", type=str, default=None, help="Name of the logging project (wandb/neptune project, MLflow experiment)."
     )
     arg_group.add_argument(
         "--wandb_path", type=str, default=None, help="Name of the logging project when using wandb or neptune."
@@ -81,5 +86,8 @@ def update_rsl_rl_cfg(agent_cfg: RslRlOnPolicyRunnerCfg, args_cli: argparse.Name
     if agent_cfg.logger in {"wandb", "neptune"} and args_cli.log_project_name:
         agent_cfg.wandb_project = args_cli.log_project_name
         agent_cfg.neptune_project = args_cli.log_project_name
+    # MLflow experiment; defaults to agent_cfg.experiment_name when unset
+    if agent_cfg.logger == "mlflow" and args_cli.log_project_name:
+        os.environ["MLFLOW_EXPERIMENT_NAME"] = args_cli.log_project_name
 
     return agent_cfg
