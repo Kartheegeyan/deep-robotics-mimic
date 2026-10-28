@@ -114,6 +114,12 @@ class MotionOnPolicyRunner(OnPolicyRunner):
     ):
         super().__init__(env, train_cfg, log_dir, device)
         self.registry_name = registry_name
+        if str(train_cfg.get("logger", "")).lower() == "mlflow":
+            # rsl_rl's Logger has no MLflow backend; swap in the subclass that adds one.
+            from whole_body_tracking.utils.mlflow_utils import MlflowLogger
+
+            self.logger.__class__ = MlflowLogger
+            self.logger.registry_name = registry_name
     def _configure_multi_gpu(self):
         """Use gloo backend with CPU staging shims to avoid NCCL crashes."""
         self.gpu_world_size = int(os.getenv("WORLD_SIZE", "1"))

@@ -32,6 +32,11 @@ LOG_DIR=${LOG_DIR:-$REPO/logs/slurm}
 
 mkdir -p "$LOG_DIR" "$PIP_CACHE" "$(dirname "$OUT")"
 
+# The cluster's TaskProlog (/etc/slurm/task_prolog.sh) is executed inside the
+# container's mount namespace, so every containerized step must bind it in or
+# the step dies with "slurm task_prolog can not be executed".
+PROLOG=/etc/slurm/task_prolog.sh:/etc/slurm/task_prolog.sh:ro
+
 # Everything not escaped is expanded now, at submit time; \$ is expanded in the job.
 sbatch <<EOF
 #!/bin/bash
@@ -56,13 +61,14 @@ srun --ntasks=1 \\
      --container-remap-root \\
      --container-writable \\
      --container-save="\$TMP" \\
-     --container-mounts="$HERE:/build:ro,$PIP_CACHE:/pipcache" \\
+     --container-mounts="$PROLOG,$HERE:/build:ro,$PIP_CACHE:/pipcache" \\
      bash -c 'PIP_CACHE_DIR=/pipcache bash /build/install_deps.sh && cp /build/image.env /etc/environment'
 
 # Open the new image the way training jobs will -- non-root, GPU attached -- and
 # fail before replacing the old image if CUDA or the packages are not usable.
 srun --ntasks=1 \\
      --container-image="\$TMP" \\
+     --container-mounts="$PROLOG" \\
      python -c "import torch, isaaclab, rsl_rl, importlib.metadata as m; \\
 assert torch.cuda.is_available(), 'CUDA not visible in the image'; \\
 print('[build] torch', torch.__version__, 'on', torch.cuda.get_device_name(0)); \\

@@ -36,6 +36,7 @@ export PIP_DEFAULT_TIMEOUT=180
 # 2.7.0 wheel is cu126 and has no sm_120 kernels for RTX 6000 Pro / 50-series.
 # The last install restates isaacsim-kernel's exact pins for click,
 # typing_extensions and websockets; left free, wandb drags all three forward.
+# mlflow-skinny is the client only and matches the cluster's MLflow 3.15.1 server.
 pip install --upgrade pip
 pip install setuptools==80.9.0 wheel packaging
 pip install torch==2.7.0 torchvision==0.22.0 torchaudio==2.7.0 \
@@ -43,7 +44,7 @@ pip install torch==2.7.0 torchvision==0.22.0 torchaudio==2.7.0 \
 pip install flatdict==4.0.1 --no-build-isolation
 pip install "isaaclab[isaacsim,all]==2.3.2" --extra-index-url https://pypi.nvidia.com --no-build-isolation
 pip install rsl-rl-lib==5.0.1
-pip install psutil onnx onnxscript "wandb>=0.19" toml tensorboard mujoco \
+pip install psutil onnx onnxscript "wandb>=0.19" mlflow-skinny==3.15.1 toml tensorboard mujoco \
     click==8.1.7 typing_extensions==4.12.2 websockets==12.0
 
 # enroot runs the job as the submitting uid, and Kit writes caches and logs
