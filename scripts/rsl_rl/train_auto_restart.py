@@ -49,7 +49,9 @@ _MAX_ITER_ARGS = {"--max_iterations", "--max_iteration"}  # handle typo variants
 def _build_cmd(script: str, nproc: int, train_args: list[str]) -> list[str]:
     cmd = [sys.executable]
     if nproc > 1:
-        cmd += ["-m", "torch.distributed.run", "--nnodes=1", f"--nproc_per_node={nproc}"]
+        # --standalone binds the rendezvous to a free port instead of 29500, so two
+        # jobs sharing a node don't collide (EADDRINUSE).
+        cmd += ["-m", "torch.distributed.run", "--standalone", f"--nproc_per_node={nproc}"]
     cmd += [script] + train_args
     return cmd
 
